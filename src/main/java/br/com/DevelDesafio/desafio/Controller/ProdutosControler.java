@@ -47,7 +47,7 @@ public class ProdutosControler {
 @PutMapping
 @Transactional
     public ResponseEntity updateProduto(@RequestBody @Validated RequestProduto data) {
-    Optional<Produtos> optionalProdutos = produtosrepository.findById(data.id());
+    Optional<Produtos> optionalProdutos = produtosrepository.findById(String.valueOf(data.id()));
     if (optionalProdutos.isPresent()) {
         Produtos produtos = optionalProdutos.get();
         produtos.setNome(data.nome());

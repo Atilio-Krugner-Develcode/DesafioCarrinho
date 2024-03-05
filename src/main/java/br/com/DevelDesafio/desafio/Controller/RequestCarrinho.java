@@ -1,8 +1,8 @@
 package br.com.DevelDesafio.desafio.Controller;
 
-public record RequestCliente(
-
+public record RequestCarrinho(
         Integer id,
-        String nome
+        Integer cliente_id
+
 ) {
 }
