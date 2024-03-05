@@ -1,6 +1,6 @@
 CREATE TABLE carrinho (
     id int(1) AUTO_INCREMENT,
-    cliente_id integer,
+    valor_total float,
     PRIMARY KEY (id)
 );
 

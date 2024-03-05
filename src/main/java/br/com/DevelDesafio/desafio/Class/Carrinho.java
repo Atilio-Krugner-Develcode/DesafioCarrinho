@@ -1,10 +1,6 @@
 package br.com.DevelDesafio.desafio.Class;
 
-import br.com.DevelDesafio.desafio.Controller.RequestCarrinho;
-import br.com.DevelDesafio.desafio.Controller.RequestCliente;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Table(name ="carrinho")
@@ -14,14 +10,21 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Carrinho {
-    @Id
-    private int id;
-    private int cliente_id;
 
-    public Carrinho(RequestCarrinho requestCarrinho) {
-        this.cliente_id = requestCarrinho.cliente_id();
+public class Carrinho {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
+    @Id
+//    @GeneratedValue(strategy = GenerationType.UUID)
+    private int id;
+    private float valor_total;
+
+    public Carrinho(double valorTotalInicial) {
+        this.valor_total = 0;
     }
 
+//    @OneToMany(mappedBy = "carrinho", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<CarrinhoItems> itens = new ArrayList<>();
 
+    
 }

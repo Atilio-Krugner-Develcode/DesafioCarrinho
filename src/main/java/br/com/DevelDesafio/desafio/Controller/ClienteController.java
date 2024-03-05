@@ -1,7 +1,8 @@
 package br.com.DevelDesafio.desafio.Controller;
 
+import br.com.DevelDesafio.desafio.Class.Carrinho;
 import br.com.DevelDesafio.desafio.Class.Clientes;
-import br.com.DevelDesafio.desafio.Class.Produtos;
+import br.com.DevelDesafio.desafio.ProdutosRepository.CarrinhoRepository;
 import br.com.DevelDesafio.desafio.ProdutosRepository.ClientesRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import java.util.Optional;
 public class ClienteController {
     @Autowired
     private ClientesRepository clientesRepository;
+    @Autowired
+    private CarrinhoRepository carrinhoRepository;
 
     @GetMapping
     public ResponseEntity getALLProducts(){
@@ -35,10 +38,26 @@ public class ClienteController {
     }
 
     @PostMapping
+    @Transactional
     public  ResponseEntity postCliente(@RequestBody @Validated RequestCliente data) {
         Clientes newClientes = new Clientes(data);
-        clientesRepository.save(newClientes);
-        return ResponseEntity.ok().build();
+        var createCliente = clientesRepository.save(newClientes);
+
+        var idClient = createCliente.getId();
+
+        Carrinho newCarrinho = new Carrinho();
+        var createCarrinho = carrinhoRepository.save(newCarrinho);
+
+        var idCarrinho = createCarrinho.getId();
+
+        Optional<Clientes> getClient = clientesRepository.findById(String.valueOf(idClient));
+
+        if (getClient.isPresent()) {
+            Clientes setCliente = getClient.get();
+            setCliente.setCarrinho_id(idCarrinho);
+        };
+
+        return ResponseEntity.ok(createCliente);
 
     }
 
