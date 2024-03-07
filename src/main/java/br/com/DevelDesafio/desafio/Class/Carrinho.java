@@ -19,12 +19,12 @@ public class Carrinho {
     private int id;
     private float valor_total;
 
+
     public Carrinho(double valorTotalInicial) {
         this.valor_total = 0;
     }
 
-//    @OneToMany(mappedBy = "carrinho", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<CarrinhoItems> itens = new ArrayList<>();
+
 
     
 }

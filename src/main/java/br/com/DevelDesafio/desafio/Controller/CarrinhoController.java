@@ -32,57 +32,77 @@ public class CarrinhoController {
     private ClientesRepository clientesRepository;
 
     @GetMapping("/{id}")
-    public ResponseEntity getCarrinhobyId(@PathVariable String id){
+    public ResponseEntity getCarrinhobyId(@PathVariable String id) {
+        Optional<Clientes> cliente = clientesRepository.findById(id);
 
-        Optional<Carrinho> carrinho = carrinhoRepository.findById(id);
+        Clientes getCliente = cliente.get();
 
-        if (carrinho.isPresent()) {
-            return ResponseEntity.ok(carrinho);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Integer carrinhoId = getCliente.getCarrinho_id();
+
+        Optional<Carrinho> carrinho = carrinhoRepository.findById(String.valueOf(carrinhoId));
+
+//        List<CarrinhoItems> carrinhoItems = carrinho_itemsRepository.findAllByCarrinhoId(carrinhoId);
+
+        return ResponseEntity.ok(carrinho);
+
     }
+
     @PostMapping
-    public  ResponseEntity postCarrinho(@RequestBody @Validated RequestCarrinho data) {
+    @Transactional
+    public ResponseEntity postCarrinho(@RequestBody @Validated RequestCarrinho_Itens data) {
+        Optional<Clientes> cliente = clientesRepository.findById(String.valueOf(data.cliente_id()));
 
-//        Carrinho newCarrinho = new Carrinho(data);
-//        var createCarrinho = carrinhoRepository.save(newCarrinho);
-//
-//        var idCarrinho = createCarrinho.getId();
+        Clientes getCliente = cliente.get();
 
-        CarrinhoItems newCarrinhoItems = new CarrinhoItems(data);
-        newCarrinhoItems.setCarrinho_id(data.carrinho_id());
-        newCarrinhoItems.setProduto_id(data.produto_id() );
+        Integer carrinhoId = getCliente.getCarrinho_id();
 
+        Optional<Carrinho> carrinho = carrinhoRepository.findById(String.valueOf(carrinhoId));
+        Carrinho getCarrinho = carrinho.get();
 
-        newCarrinhoItems.setQuantidade(data.quantidade());
+        Optional<CarrinhoItems> selectExistsItem = carrinho_itemsRepository.getByProductInCarrinhoItems(data.produto_id(), carrinhoId);
 
-        carrinho_itemsRepository.save(newCarrinhoItems);
+        if (selectExistsItem.isPresent()) {
+            CarrinhoItems getItem = selectExistsItem.get();
+            getItem.setCarrinho_id(carrinhoId);
+            getItem.setProduto_id(data.produto_id());
+            getItem.setQuantidade(getItem.getQuantidade() + data.quantidade());
 
-        return ResponseEntity.ok(newCarrinhoItems);
+            carrinho_itemsRepository.save(getItem);
+        } else {
+            CarrinhoItems newCarrinhoItems = new CarrinhoItems();
+            newCarrinhoItems.setCarrinho_id(carrinhoId);
+            newCarrinhoItems.setProduto_id(data.produto_id());
+            newCarrinhoItems.setQuantidade(data.quantidade());
+
+            carrinho_itemsRepository.save(newCarrinhoItems);
+        };
+
+        Optional<Produtos> produto = produtosrepository.findById(String.valueOf(data.produto_id()));
+
+        Produtos getProduto = produto.get();
+
+        float soma = ((getProduto.getPreco() * data.quantidade()) + getCarrinho.getValor_total());
+
+        getCarrinho.setValor_total(soma);
+
+        return ResponseEntity.ok(carrinho);
 
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteCarrinho(@PathVariable String id){
+    public ResponseEntity deleteCarrinho(@PathVariable String id) {
         carrinhoRepository.deleteById(id);
-        return   ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 
-    
+    @GetMapping("/{id}/valorTotal")
+    public ResponseEntity<Double> getValorTotalCarrinho(@PathVariable int id) {
+        Optional<Carrinho> carrinho = carrinhoRepository.findById(String.valueOf(id));
 
-//    public void salvarCarrinhoComItems(Carrinho carrinho, List<CarrinhoItems> itens) {
-//        carrinhoRepository.save(carrinho);
-//
-//        var id = carrinho.getId();
-//
-//
-////        for (CarrinhoItems item : itens) {
-////            item.setCarrinho(carrinho);
-////            carrinho_itemsRepository.save(item);
-////        }
-//    }
-
-
-
+        if (carrinho.isPresent()) {
+            return ResponseEntity.ok((double) carrinho.get().getValor_total());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
