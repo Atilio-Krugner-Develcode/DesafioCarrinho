@@ -1,11 +1,13 @@
 package br.com.DevelDesafio.desafio.ProdutosRepository;
 
 import br.com.DevelDesafio.desafio.Class.CarrinhoItems;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +24,9 @@ public interface Carrinho_itemsRepository extends JpaRepository<CarrinhoItems, I
 
     @Query("SELECT ci FROM carrinho_items AS ci WHERE ci.produto_id = :productId AND ci.carrinho_id = :carrinhoId")
     Optional <CarrinhoItems>  getByProductInCarrinhoItems(@Param("productId") Integer productId, @Param("carrinhoId") Integer carrinhoId);
+
+//    @Query("DELETE FROM carrinho_items ci WHERE ci .carrinho_id = :carrinhoId")
+//    Optional <CarrinhoItems>  getByCarrinhoDeleteItens(@Param("carrinhoId") Integer carrinhoId);
+
+
 }

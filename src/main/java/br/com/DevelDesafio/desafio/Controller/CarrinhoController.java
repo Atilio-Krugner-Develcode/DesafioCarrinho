@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 @Service
 @Transactional
@@ -41,9 +40,9 @@ public class CarrinhoController {
 
         Optional<Carrinho> carrinho = carrinhoRepository.findById(String.valueOf(carrinhoId));
 
-//        List<CarrinhoItems> carrinhoItems = carrinho_itemsRepository.findAllByCarrinhoId(carrinhoId);
 
         return ResponseEntity.ok(carrinho);
+
 
     }
 
@@ -91,8 +90,8 @@ public class CarrinhoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteCarrinho(@PathVariable String id) {
-        carrinhoRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+//        carrinho_itemsRepository.getByCarrinhoDeleteItens(Integer.valueOf(id));
+        return ResponseEntity.ok("");
     }
 
     @GetMapping("/{id}/valorTotal")
